@@ -1,11 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { useState , useEffect , useMemo } from 'react';
 import { Container, Row, Col, Form, Button, Badge, InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
-import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
+import { GoogleMap, Marker, DirectionsRenderer, LoadScript } from '@react-google-maps/api';
 
 const DayTripPlanner = () => {
   const [destination, setDestination] = useState('');
-  const [mapCenter, setMapCenter] = useState({ lat: -34.397, lng: 150.644 }); // Example default center, replace with your preferred default
+  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [isMapsLoaded, setIsMapsLoaded] = useState(false);
+  const [mapCenter, setMapCenter] = useState({ lat: 32.8812, lng: -117.2344 }); // Example default center, replace with your preferred default
   const [budget, setBudget] = useState('');
   const [foodType, setFoodType] = useState('');
   const [activity, setActivity] = useState('');
@@ -54,9 +56,57 @@ const DayTripPlanner = () => {
     console.log("Form Submitted", { destination, budget, foodType, activity, interests });
   };
 
+  const mapContainerStyle = {
+    height: '400px',
+    width: '100%'
+  };
+  const center = {
+    lat: -25.344, // Default center, update as needed
+    lng: 131.031
+  };
+  const googleMapsApiKey = 'AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE';
+
+  //DELETE WHEN YELP ADDED *************
+  const locations = useMemo(() => [
+    { lat: 32.8812, lng: -117.2344 },
+    { lat: 32.8801, lng: -117.2350 },
+    // ... more locations
+  ], []);
+
+  useEffect(() => {
+    const drawRoute = async () => {
+      if (!isMapsLoaded || locations.length < 2) return;
+
+      const directionsService = new window.google.maps.DirectionsService();
+      const origin = locations[0];
+      const destination = locations[locations.length - 1];
+      const waypoints = locations.slice(1, -1).map(location => ({ location, stopover: true }));
+
+      try {
+        const response = await directionsService.route({
+          origin,
+          destination,
+          waypoints,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        });
+        setDirectionsResponse(response);
+      } catch (error) {
+        console.error('Directions request failed due to ' + error);
+      }
+    };
+
+    if (isMapsLoaded) {
+      drawRoute();
+    }
+  }, [isMapsLoaded, locations]);
+
+  const handleScriptLoad = () => {
+    setIsMapsLoaded(true);
+  };
+
   return (
-    <Container fluid="md" className="mt-5">
-      <Row className="justify-content-md-center">
+    <Container fluid className="mt-5">
+      <Row className="justify-content-center">
         <Col md={8}>
           <h2>Day Trip Planner</h2>
           <Form onSubmit={handleSubmit}>
@@ -69,44 +119,47 @@ const DayTripPlanner = () => {
               />
             </InputGroup>
 
-            <DropdownButton
-              as={InputGroup.Prepend}
-              variant="outline-secondary"
-              title={budget || "Budget"}
-              id="input-group-dropdown-1"
-              className="mb-3"
-              onSelect={handleSelectBudget}
-            >
-              {budgets.map((budget, index) => (
-                <Dropdown.Item key={index} eventKey={budget}>{budget}</Dropdown.Item>
-              ))}
-            </DropdownButton>
-
-            <DropdownButton
-              as={InputGroup.Prepend}
-              variant="outline-secondary"
-              title={foodType || "Select Food Type"}
-              id="input-group-dropdown-2"
-              className="mb-3"
-              onSelect={handleSelectFoodType}
-            >
-              {foodTypes.map((type, index) => (
-                <Dropdown.Item key={index} eventKey={type}>{type}</Dropdown.Item>
-              ))}
-            </DropdownButton>
-
-            <DropdownButton
-              as={InputGroup.Prepend}
-              variant="outline-secondary"
-              title={activity || "Select Activity"}
-              id="input-group-dropdown-3"
-              className="mb-3"
-              onSelect={handleSelectActivity}
-            >
-              {activities.map((activity, index) => (
-                <Dropdown.Item key={index} eventKey={activity}>{activity}</Dropdown.Item>
-              ))}
-            </DropdownButton>
+            <Row className="mb-3">
+              <Col>
+                <DropdownButton
+                  as={InputGroup.Prepend}
+                  variant="outline-secondary"
+                  title={budget || "Budget"}
+                  id="input-group-dropdown-1"
+                  onSelect={handleSelectBudget}
+                >
+                  {budgets.map((budget, index) => (
+                    <Dropdown.Item key={index} eventKey={budget}>{budget}</Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              </Col>
+              <Col>
+                <DropdownButton
+                  as={InputGroup.Prepend}
+                  variant="outline-secondary"
+                  title={foodType || "Select Food Type"}
+                  id="input-group-dropdown-2"
+                  onSelect={handleSelectFoodType}
+                >
+                  {foodTypes.map((type, index) => (
+                    <Dropdown.Item key={index} eventKey={type}>{type}</Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              </Col>
+              <Col>
+                <DropdownButton
+                  as={InputGroup.Prepend}
+                  variant="outline-secondary"
+                  title={activity || "Select Activity"}
+                  id="input-group-dropdown-3"
+                  onSelect={handleSelectActivity}
+                >
+                  {activities.map((activity, index) => (
+                    <Dropdown.Item key={index} eventKey={activity}>{activity}</Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              </Col>
+            </Row>
 
             <Form.Group className="mb-3">
               <Form.Label>Add Interests</Form.Label>
@@ -137,15 +190,22 @@ const DayTripPlanner = () => {
               Plan My Trip
             </Button>
           </Form>
-
-          <LoadScript googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE">
+          <LoadScript
+            googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE" // Use your API key here
+            onLoad={handleScriptLoad}
+          >
             <GoogleMap
               id="map"
               mapContainerStyle={{ height: '400px', width: '100%' }}
-              zoom={8}
+              zoom={12}
               center={mapCenter}
             >
-              <Marker position={mapCenter} />
+              {locations.map((location, index) => (
+                <Marker key={index} position={location} />
+              ))}
+              {directionsResponse && (
+                <DirectionsRenderer directions={directionsResponse} />
+              )}
             </GoogleMap>
           </LoadScript>
         </Col>
