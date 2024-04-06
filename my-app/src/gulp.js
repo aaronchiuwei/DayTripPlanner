@@ -5,19 +5,10 @@ const TestComponent = () => {
 
   useEffect(() => {
     // Fetch the data from your API
-    fetch('/api')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setData(data); // Set the data in state
-      })
-      .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
-      });
+    fetch('http://localhost:3001/yelp-search?term=burger&location=san+diego')
+    .then(response => response.json())
+    .then(data => setData(data))
+    .catch(error => console.error('Error:', error));
   }, []); // The empty array ensures this effect runs once on mount
 
   // Render the data or a loading message
