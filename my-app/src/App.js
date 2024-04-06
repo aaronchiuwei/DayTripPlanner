@@ -1,7 +1,7 @@
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Badge, InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
+import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 
 const DayTripPlanner = () => {
   const [destination, setDestination] = useState('');
@@ -119,11 +119,20 @@ const DayTripPlanner = () => {
             <Button variant="primary" type="submit" className="mt-3">
               Plan My Trip
             </Button>
-          </Form>
 
-          <div className="mt-5" style={{ height: '400px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Map Placeholder
-          </div>
+            {/* Google Map */}
+            <LoadScript googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE">
+              <GoogleMap
+                id="map"
+                mapContainerStyle={{ height: '400px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                zoom={4}
+                center={{ lat: -25.344, lng: 131.031 }}
+              >
+                {/* Marker */}
+                <Marker position={{ lat: -25.344, lng: 131.031 }} title="Uluru" />
+              </GoogleMap>
+            </LoadScript>
+          </Form>
         </Col>
       </Row>
     </Container>
@@ -131,4 +140,3 @@ const DayTripPlanner = () => {
 };
 
 export default DayTripPlanner;
-
