@@ -5,6 +5,7 @@ import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 
 const DayTripPlanner = () => {
   const [destination, setDestination] = useState('');
+  const [mapCenter, setMapCenter] = useState({ lat: -34.397, lng: 150.644 }); // Example default center, replace with your preferred default
   const [budget, setBudget] = useState('');
   const [foodType, setFoodType] = useState('');
   const [activity, setActivity] = useState('');
@@ -22,7 +23,7 @@ const DayTripPlanner = () => {
   const addInterest = (e) => {
     e.preventDefault();
     if (inputInterest && !interests.includes(inputInterest)) {
-      setInterests((prevInterests) => [...prevInterests, inputInterest]);
+      setInterests(prevInterests => [...prevInterests, inputInterest]);
       setInputInterest('');
     }
   };
@@ -33,6 +34,22 @@ const DayTripPlanner = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Ideally, move geocodeDestination out of handleSubmit if you plan to use it elsewhere
+    const geocodeDestination = async (dest) => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ 'address': dest }, (results, status) => {
+        if (status === 'OK') {
+          setMapCenter({
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng()
+          });
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    };
+
+    geocodeDestination(destination);
     // Here, you would handle submitting these values to a backend service or using them to filter data client-side
     console.log("Form Submitted", { destination, budget, foodType, activity, interests });
   };
@@ -119,20 +136,18 @@ const DayTripPlanner = () => {
             <Button variant="primary" type="submit" className="mt-3">
               Plan My Trip
             </Button>
-
-            {/* Google Map */}
-            <LoadScript googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE">
-              <GoogleMap
-                id="map"
-                mapContainerStyle={{ height: '400px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                zoom={4}
-                center={{ lat: -25.344, lng: 131.031 }}
-              >
-                {/* Marker */}
-                <Marker position={{ lat: -25.344, lng: 131.031 }} title="Uluru" />
-              </GoogleMap>
-            </LoadScript>
           </Form>
+
+          <LoadScript googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE">
+            <GoogleMap
+              id="map"
+              mapContainerStyle={{ height: '400px', width: '100%' }}
+              zoom={8}
+              center={mapCenter}
+            >
+              <Marker position={mapCenter} />
+            </GoogleMap>
+          </LoadScript>
         </Col>
       </Row>
     </Container>
