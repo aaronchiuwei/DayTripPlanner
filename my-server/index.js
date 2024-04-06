@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 const express = require('express');
 const yelp = require('yelp-fusion');
 const cors = require('cors');
@@ -7,7 +8,7 @@ const app = express();
 const port = 3001; // Port where the backend server will listen
 
 // Your Yelp Fusion API Key
-const apiKey = '1Om3QOfLFzesvUcSRKQVqXOfd1DDz0uhf03eRqyeiGYNrOHOR3IdZXUOIhL4MD1tcoRgBMw7nwtJ9uHoayqUabV5TzjGAMPFGER4wSJ__SGIu1kkNQMX_2axUbERZnYx';
+const apiKey = process.env.YELP_API_KEY;
 const client = yelp.client(apiKey);
 
 // Use CORS for cross-origin allowance
