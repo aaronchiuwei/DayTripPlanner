@@ -37,7 +37,23 @@ const DayTripPlanner = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Geocode destination and handle form submission logic here
+    // Ideally, move geocodeDestination out of handleSubmit if you plan to use it elsewhere
+    const geocodeDestination = async (dest) => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ 'address': dest }, (results, status) => {
+        if (status === 'OK') {
+          setMapCenter({
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng()
+          });
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    };
+
+    geocodeDestination(destination);
+    // Here, you would handle submitting these values to a backend service or using them to filter data client-side
     console.log("Form Submitted", { destination, budget, foodType, activity, interests });
   };
 
