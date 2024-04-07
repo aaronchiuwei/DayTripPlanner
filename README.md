@@ -48,3 +48,23 @@ Aaron Chiuwei, Kile Hsu, Shrey Gandhi, Varun Sharma
 
 Project Link: (https://github.com/aaronchiuwei/DayTripPlanner)
    
+## Inspiration
+The inspiration for Day Trip Planner stemmed from a desire to simplify and enhance the experience of planning day trips by leveraging technology and curated recommendations.
+
+## What it does
+Day Trip Planner is a dynamic application that generates personalized itineraries based on user preferences for cuisine, activities, and budget. It integrates with APIs like Yelp, Google Maps, and ChatGPT to provide tailored recommendations and an interactive map experience.
+
+## How we built it
+We built Day Trip Planner using React for the frontend and integrated various APIs including Yelp and Google Maps for data retrieval and visualization. The backend services were managed with Node.js and Express.
+
+## Challenges we ran into
+One of the key challenges was optimizing the user experience and ensuring real-time updates on the map based on user selections. Integrating multiple APIs seamlessly and handling asynchronous operations posed technical hurdles.
+
+## Accomplishments that we're proud of
+We're proud of creating a user-friendly interface that offers dynamic itinerary generation and map visualization. Our accomplishment lies in delivering a functional tool that simplifies trip planning for users.
+
+## What we learned
+Through this project, we learned valuable skills in frontend development, API integration, and asynchronous programming. We gained insights into user experience design and the importance of responsive web applications.
+
+## What's next for Day Trip Planner
+In the future, we aim to enhance Day Trip Planner by adding more features such as user authentication, social sharing, and real-time collaboration on itineraries. We also plan to expand our database of locations and activities to offer broader options to users.
