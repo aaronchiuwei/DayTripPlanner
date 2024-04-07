@@ -28,25 +28,6 @@ Day Trip Planner is a dynamic, user-friendly application designed for individual
    OPENAI_API_KEY=your_openai_api_key_here
 5. Start the application.
    npm start
-
-## Usage
-1. Access the application through your web browser at `http://localhost:3000`.
-2. Enter your preferences for cuisine, price level, and area of interest.
-3. Submit your preferences to receive a personalized day trip itinerary.
-4. Follow the interactive map and itinerary suggestions for a seamless experience.
-
-## Contributing
-We welcome contributions! If you're interested in improving Day Trip Planner, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a pull request.
-
-## Contact
-Aaron Chiuwei, Kile Hsu, Shrey Gandhi, Varun Sharma
-
-Project Link: (https://github.com/aaronchiuwei/DayTripPlanner)
    
 ## Inspiration
 The inspiration for Day Trip Planner stemmed from a desire to simplify and enhance the experience of planning day trips by leveraging technology and curated recommendations.
@@ -68,3 +49,23 @@ Through this project, we learned valuable skills in frontend development, API in
 
 ## What's next for Day Trip Planner
 In the future, we aim to enhance Day Trip Planner by adding more features such as user authentication, social sharing, and real-time collaboration on itineraries. We also plan to expand our database of locations and activities to offer broader options to users.
+
+## Usage
+1. Access the application through your web browser at `http://localhost:3000`.
+2. Enter your preferences for cuisine, price level, and area of interest.
+3. Submit your preferences to receive a personalized day trip itinerary.
+4. Follow the interactive map and itinerary suggestions for a seamless experience.
+
+## Contributing
+We welcome contributions! If you're interested in improving Day Trip Planner, please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a pull request.
+
+## Contact
+Aaron Chiuwei, Kile Hsu, Shrey Gandhi, Varun Sharma
+
+Project Link: (https://github.com/aaronchiuwei/DayTripPlanner)
+   
