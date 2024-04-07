@@ -1,5 +1,5 @@
 'use strict';
-//require('dotenv').config();
+// require('dotenv').config(); // Uncomment this line if you're using dotenv for API keys
 const express = require('express');
 const yelp = require('yelp-fusion');
 const cors = require('cors');
@@ -8,38 +8,32 @@ const app = express();
 const port = 3001; // Port where the backend server will listen
 
 // Your Yelp Fusion API Key
-const apiKey = '1Om3QOfLFzesvUcSRKQVqXOfd1DDz0uhf03eRqyeiGYNrOHOR3IdZXUOIhL4MD1tcoRgBMw7nwtJ9uHoayqUabV5TzjGAMPFGER4wSJ__SGIu1kkNQMX_2axUbERZnYx';
+const apiKey = '2hrG-_7S2j7so5mhP7rz0Z8hiXSLHcHdK7Ta7xzho7LLkGKnc8qg8wJkol0lDyh0T6efUWnDIcE5mdWP0x2lPfBb9QGmsZ62bAzDFBeNcj1UwJFE07YQu8KsvC0SZnYx';
 const client = yelp.client(apiKey);
 
-// Use CORS for cross-origin allowance
 app.use(cors());
 
 app.get('/yelp-search', (req, res) => {
-  // Extract query params with defaults if not provided
-  const { term = 'Four Barrel Coffee', location = 'san francisco, ca', price} = req.query;
+  const { term = 'coffee', location = 'san francisco, ca', price, categories } = req.query;
 
   // Construct search parameters object for Yelp API
   const searchParams = {
     term,
-    location
+    location,
+    ...(price && { price }), // Conditionally add price if it's provided
+    ...(categories && { categories }), // Conditionally add categories if provided
   };
 
-  // Add optional parameters only if they are provided
-  if (price) searchParams.price = price; // price should be a string like "1", "2", "3", or "4"
-  // Call Yelp search with the constructed search parameters
-  client.search({ term, location })
+  client.search(searchParams)
     .then(response => {
-      // Get businesses and sort them by rating in descending order
-      const sortedBusinesses = response.jsonBody.businesses.sort((a, b) => b.rating - a.rating);
-      
-      // Limit to top 10 results based on rating
-      const topRatedBusinesses = sortedBusinesses.slice(0, 10);
+      const businesses = response.jsonBody.businesses;
+      const sortedBusinesses = businesses.sort((a, b) => b.rating - a.rating);
+      const topRatedBusinesses = sortedBusinesses.slice(0, 30);
       
       // Pick a random business from the top 10
       const randomIndex = Math.floor(Math.random() * topRatedBusinesses.length);
       const randomBusiness = topRatedBusinesses[randomIndex];
       
-      // Send the randomly selected business back to the client
       res.json(randomBusiness);
     })
     .catch(error => {
@@ -47,7 +41,6 @@ app.get('/yelp-search', (req, res) => {
       res.status(500).json({ error: 'Failed to fetch data from Yelp' });
     });
 });
-
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

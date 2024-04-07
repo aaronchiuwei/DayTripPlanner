@@ -5,6 +5,7 @@ import 'startbootstrap-sb-admin-2/vendor/fontawesome-free/css/all.min.css';
 import 'startbootstrap-sb-admin-2/css/sb-admin-2.min.css';
 
 const DayTripPlanner = () => {
+  document.body.style.backgroundColor = "#E6E3DB";
   const [locations, setLocations] = useState([]);
   const [destination, setDestination] = useState('');
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -18,7 +19,15 @@ const DayTripPlanner = () => {
 
   const foodTypes = ["Local Cuisine", "Vegetarian", "Vegan", "Seafood", "Street Food"];
   const activities = ["Hiking", "Shopping", "Historical Sites", "Beach", "Nightlife"];
+  const mealTypes = ["breakfast", "lunch", "dinner"];
   const budgets = ["$", "$$", "$$$", "$$$$"];
+  const categoryMappings = {
+    "Hiking": "hiking",
+    "Shopping": "shopping",
+    "Historical Sites": "landmarks",
+    "Beach": "beaches",
+    "Nightlife": "nightlife",
+  };
 
   const handleSelectFoodType = (eventKey) => setFoodType(eventKey);
   const handleSelectActivity = (eventKey) => setActivity(eventKey);
@@ -38,6 +47,34 @@ const DayTripPlanner = () => {
 
   const removeInterest = (interestToRemove) => {
     setInterests(interests.filter(interest => interest !== interestToRemove));
+  };
+
+  const fetchActivities = async () => {
+    for (const activity of activities) {
+      // Use the activity as the search term directly
+      const searchTerm = activity;
+      
+      try {
+        const queryParams = new URLSearchParams({
+          term: searchTerm, // Directly use the activity as the search term
+          location: destination,
+          categories: categoryMappings[activity], // Optionally, map activities to specific Yelp categories
+        });
+  
+        const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
+        const data = await response.json();
+        
+
+        console.log(data);
+  
+        if (data.coordinates) {
+          const newLocation = { name: data.name, lat: data.coordinates.latitude, lng: data.coordinates.longitude };
+          addLocation(newLocation); // Assuming this function adds the location to an array or state for rendering
+        }
+      } catch (error) {
+        console.error(`Failed to fetch Yelp data for ${activity}:`, error);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -68,7 +105,7 @@ const DayTripPlanner = () => {
 
       // Assuming each response includes a relevant location
       if (data.coordinates) {
-        const newLocation = { lat: data.coordinates.latitude, lng: data.coordinates.longitude };
+        const newLocation = { name: data.name, lat: data.coordinates.latitude, lng: data.coordinates.longitude };
         //setMapCenter(newLocation); // Update map center to the latest location
         addLocation(newLocation); // Add the new location for rendering on the map
       }
@@ -77,6 +114,7 @@ const DayTripPlanner = () => {
       console.error(`Failed to fetch Yelp data for ${meal}:`, error);
     }
   }
+  fetchActivities();
   console.log("Form Submitted", { destination, budget, foodType, activity, interests });
 };
   const mapContainerStyle = {
@@ -123,7 +161,7 @@ const DayTripPlanner = () => {
   return (
     <Container fluid className="mt-5">
       <Row className="justify-content-center">
-        <Col lg={8}>
+        <Col lg={10}>
           <div className="card shadow mb-4">
             <div className="card-header py-3">
               <h2 className="m-0 font-weight-bold text-primary">Day Trip Planner</h2>
@@ -198,14 +236,14 @@ const DayTripPlanner = () => {
 
                 {interests.length > 0 && (
                   <div>
-                    <h5>Selected Interests</h5>
-                    {interests.map((interest, index) => (
-                      <Badge key={index} bg="secondary" className="me-2">
-                        {interest}{' '}
-                        <span style={{ cursor: 'pointer' }} onClick={() => removeInterest(interest)}>x</span>
-                      </Badge>
-                    ))}
-                  </div>
+                  <h5>Selected Interests</h5>
+                  {interests.map((interest, index) => (
+                    <Badge key={index} style={{ backgroundColor: 'blue', color: 'white' }} className="me-2">
+                      {interest}{' '}
+                      <span style={{ cursor: 'pointer', color: 'white' }} onClick={() => removeInterest(interest)}>x</span>
+                    </Badge>
+                  ))}
+                </div>
                 )}
 
                 <Button variant="primary" type="submit" className="mt-3 " onClick={handleSubmit}>
@@ -216,9 +254,8 @@ const DayTripPlanner = () => {
           </div>
         </Col>
       </Row>
-
       <Row className="justify-content-center">
-        <Col lg={8}>
+        <Col lg={10}>
           <div className="card shadow mb-4">
             <div className="card-body">
               <LoadScript googleMapsApiKey="AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE" onLoad={handleScriptLoad}>
@@ -232,6 +269,22 @@ const DayTripPlanner = () => {
                   {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
                 </GoogleMap>
               </LoadScript>
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <Row className="justify-content-center mt-4">
+        <Col lg={10}>
+          <div className="card shadow">
+            <div className="card-header py-3">
+              <h2 className="m-0 font-weight-bold text-primary">Planned Locations</h2>
+            </div>
+            <div className="card-body">
+              <ul>
+                {locations.map((location, index) => (
+                  <li key={index}>{location.name} - {index + 1}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </Col>
