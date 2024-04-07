@@ -27,10 +27,20 @@ app.get('/yelp-search', (req, res) => {
   // Add optional parameters only if they are provided
   if (price) searchParams.price = price; // price should be a string like "1", "2", "3", or "4"
   // Call Yelp search with the constructed search parameters
-  client.search(searchParams)
+  client.search({ term, location })
     .then(response => {
-      const firstResult = response.jsonBody.businesses[0];
-      res.json(firstResult); // Send the first result back to the client
+      // Get businesses and sort them by rating in descending order
+      const sortedBusinesses = response.jsonBody.businesses.sort((a, b) => b.rating - a.rating);
+      
+      // Limit to top 10 results based on rating
+      const topRatedBusinesses = sortedBusinesses.slice(0, 10);
+      
+      // Pick a random business from the top 10
+      const randomIndex = Math.floor(Math.random() * topRatedBusinesses.length);
+      const randomBusiness = topRatedBusinesses[randomIndex];
+      
+      // Send the randomly selected business back to the client
+      res.json(randomBusiness);
     })
     .catch(error => {
       console.error(error);

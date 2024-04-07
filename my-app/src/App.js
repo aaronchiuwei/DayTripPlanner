@@ -53,7 +53,6 @@ const DayTripPlanner = () => {
   for (const meal of mealTypes) {
     // Combine meal type with the food type and activity for the search term
     const searchTerm = [meal, foodType].filter(Boolean).join(' ');
-
     try {
       // Construct the search query parameters
       const queryParams = new URLSearchParams({
@@ -70,10 +69,9 @@ const DayTripPlanner = () => {
       // Assuming each response includes a relevant location
       if (data.coordinates) {
         const newLocation = { lat: data.coordinates.latitude, lng: data.coordinates.longitude };
-        setMapCenter(newLocation); // Update map center to the latest location
+        //setMapCenter(newLocation); // Update map center to the latest location
         addLocation(newLocation); // Add the new location for rendering on the map
       }
-
       console.log(data);
     } catch (error) {
       console.error(`Failed to fetch Yelp data for ${meal}:`, error);
