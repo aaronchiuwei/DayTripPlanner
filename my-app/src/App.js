@@ -44,21 +44,6 @@ const DayTripPlanner = () => {
   // Map the dollar signs to numeric price levels for Yelp
   const priceLevels = { "$": "1", "$$": "2", "$$$": "3", "$$$$": "4" };
   const price = priceLevels[budget];
-    const geocodeDestination = async (dest) => {
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ 'address': dest }, (results, status) => {
-        if (status === 'OK') {
-          setMapCenter({
-            lat: results[0].geometry.location.lat(),
-            lng: results[0].geometry.location.lng()
-          });
-        } else {
-          alert('Geocode was not successful for the following reason: ' + status);
-        }
-      });
-    };
-
-    geocodeDestination(destination);
     try {
       // Construct the search query parameters
       const queryParams = new URLSearchParams({
