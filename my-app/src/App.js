@@ -6,6 +6,9 @@ import 'startbootstrap-sb-admin-2/css/sb-admin-2.min.css';
 
 const DayTripPlanner = () => {
   document.body.style.backgroundColor = "#E6E3DB";
+  const indexToLetter = (index) => {
+    return String.fromCharCode(65 + index); // 65 is the ASCII code for 'A'
+  };
   const [locations, setLocations] = useState([]);
   const [destination, setDestination] = useState('');
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -28,7 +31,6 @@ const DayTripPlanner = () => {
     "Beach": "beaches",
     "Nightlife": "nightlife",
   };
-
   const toggleInterest = (selectedActivity) => {
     setInterests(currentInterests => {
       if (currentInterests.includes(selectedActivity)) {
@@ -65,7 +67,7 @@ const DayTripPlanner = () => {
   };
 
   const fetchActivities = async () => {
-    for (const activity of activities) {
+    for (const interest of interests) {
       // Use the activity as the search term directly
       const searchTerm = activity;
       
@@ -73,7 +75,7 @@ const DayTripPlanner = () => {
         const queryParams = new URLSearchParams({
           term: searchTerm, // Directly use the activity as the search term
           location: destination,
-          categories: categoryMappings[activity], // Optionally, map activities to specific Yelp categories
+          categories: categoryMappings[interest], // Optionally, map activities to specific Yelp categories
         });
   
         const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
@@ -223,7 +225,7 @@ const DayTripPlanner = () => {
           <Form>
             {/* Multi-select dropdown for activities */}
             <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
+              <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic" style={{backgroundColor: 'white', color: 'gray'}}>
                 Select Activities
               </Dropdown.Toggle>
 
@@ -297,7 +299,7 @@ const DayTripPlanner = () => {
             <div className="card-body">
               <ul>
                 {locations.map((location, index) => (
-                  <li key={index}>{location.name} - {index + 1}</li>
+                  <li key={index}>{location.name} - {indexToLetter(index)}</li>
                 ))}
               </ul>
             </div>
