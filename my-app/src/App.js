@@ -5,6 +5,7 @@ import 'startbootstrap-sb-admin-2/vendor/fontawesome-free/css/all.min.css';
 import 'startbootstrap-sb-admin-2/css/sb-admin-2.min.css';
 
 const DayTripPlanner = () => {
+  const [locations, setLocations] = useState([]);
   const [destination, setDestination] = useState('');
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [isMapsLoaded, setIsMapsLoaded] = useState(false);
@@ -22,6 +23,10 @@ const DayTripPlanner = () => {
   const handleSelectFoodType = (eventKey) => setFoodType(eventKey);
   const handleSelectActivity = (eventKey) => setActivity(eventKey);
   const handleSelectBudget = (eventKey) => setBudget(eventKey);
+
+  const addLocation = (newLocation) => {
+    setLocations(currentLocations => [...currentLocations, newLocation]);
+  };
 
   const addInterest = (e) => {
     e.preventDefault();
@@ -57,11 +62,13 @@ const DayTripPlanner = () => {
       console.log(queryParams.toString());
       const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
       const data = await response.json();
-      console.log(data.coordinates.latitude);
+      const newLocation = { lat: data.coordinates.latitude, lng: data.coordinates.longitude}
       setMapCenter({
         lat: data.coordinates.latitude,
         lng: data.coordinates.longitude
       })
+      addLocation(newLocation)
+      console.log(locations)
       // Now you can do something with the data, e.g., update state to display results
       console.log(data);
     } catch (error) {
@@ -79,14 +86,6 @@ const DayTripPlanner = () => {
     lng: 131.031
     };
     const googleMapsApiKey = 'AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE';
-    
-    //DELETE WHEN YELP ADDED *************
-    const locations = useMemo(() => [
-    { lat: 32.8812, lng: -117.2344 },
-    { lat: 32.8801, lng: -117.2350 },
-    { lat: 32.8811, lng: -117.2376 },
-    // ... more locations
-    ], []);
     
     useEffect(() => {
     const drawRoute = async () => {
