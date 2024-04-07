@@ -14,12 +14,20 @@ const client = yelp.client(apiKey);
 // Use CORS for cross-origin allowance
 app.use(cors());
 
-// Yelp search route
 app.get('/yelp-search', (req, res) => {
-  // Extract query params
-  const { term = 'Four Barrel Coffee', location = 'san francisco, ca' } = req.query;
+  // Extract query params with defaults if not provided
+  const { term = 'Four Barrel Coffee', location = 'san francisco, ca', price} = req.query;
 
-  client.search({ term, location })
+  // Construct search parameters object for Yelp API
+  const searchParams = {
+    term,
+    location
+  };
+
+  // Add optional parameters only if they are provided
+  if (price) searchParams.price = price; // price should be a string like "1", "2", "3", or "4"
+  // Call Yelp search with the constructed search parameters
+  client.search(searchParams)
     .then(response => {
       const firstResult = response.jsonBody.businesses[0];
       res.json(firstResult); // Send the first result back to the client
@@ -29,6 +37,7 @@ app.get('/yelp-search', (req, res) => {
       res.status(500).json({ error: 'Failed to fetch data from Yelp' });
     });
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

@@ -35,9 +35,15 @@ const DayTripPlanner = () => {
     setInterests(interests.filter(interest => interest !== interestToRemove));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Ideally, move geocodeDestination out of handleSubmit if you plan to use it elsewhere
+      // Combine the food type and activity with a space in between for the search term
+  const searchTerm = [foodType, activity].filter(Boolean).join(' ');
+
+  // Map the dollar signs to numeric price levels for Yelp
+  const priceLevels = { "$": "1", "$$": "2", "$$$": "3", "$$$$": "4" };
+  const price = priceLevels[budget];
     const geocodeDestination = async (dest) => {
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ 'address': dest }, (results, status) => {
@@ -53,8 +59,31 @@ const DayTripPlanner = () => {
     };
 
     geocodeDestination(destination);
+    try {
+      // Construct the search query parameters
+      const queryParams = new URLSearchParams({
+        term: foodType,
+        location: destination,
+        price: price, // Use the mapped price level
+        // Add other parameters as needed
+      });
+  
+      // Call your backend endpoint with the query params
+      console.log(queryParams.toString());
+      const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
+      const data = await response.json();
+      console.log(data.coordinates.latitude);
+      setMapCenter({
+        lat: data.coordinates.latitude,
+        lng: data.coordinates.longitude
+      })
+      // Now you can do something with the data, e.g., update state to display results
+      console.log(data);
+    } catch (error) {
+      console.error("Failed to fetch Yelp data:", error);
+    }
     // Here, you would handle submitting these values to a backend service or using them to filter data client-side
-    console.log("Form Submitted", { destination, budget, foodType, activity, interests });
+    console.log("Form Submitted", { destination, budget, foodType, activity, interests })
   };
   const mapContainerStyle = {
     height: '400px',
@@ -193,7 +222,7 @@ const DayTripPlanner = () => {
                   </div>
                 )}
 
-                <Button variant="primary" type="submit" className="mt-3">
+                <Button variant="primary" type="submit" className="mt-3 " onClick={handleSubmit}>
                   Plan My Trip
                 </Button>
               </Form>
