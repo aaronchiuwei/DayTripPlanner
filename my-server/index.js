@@ -54,7 +54,7 @@ app.post('/generate-itinerary', async (req, res) => {
       endpoint,
       {
         model: "gpt-3.5-turbo-instruct", // You can choose other models like text-curie-001 based on your need
-        prompt: `Generate a detailed day itinerary for visiting: ${locations}. Make sure it is by time and dont provide other suggestions beside the ones in the locations.`,
+        prompt: `Generate a detailed day itinerary for visiting: ${locations}. Here are the guidelines that I want you to follow in the response: The first three locations are breakfast, lunch, and dinner respectively and should be given at times 9 AM, 12 PM, and 5 PM. The other activities can be placed anywhere in between these timings depending on the activity. Try to make the itinerary as relavant as possible and do not deviate AT ALL from the activities and locations that are given. For example, you should not include locations that aren't listed in the original locations list`,
         temperature: 0.7,
         max_tokens: 1000,
         top_p: 1.0,
