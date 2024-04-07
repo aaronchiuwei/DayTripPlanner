@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col, Form, Button, Badge, InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
 import { GoogleMap, Marker, DirectionsRenderer, LoadScript } from '@react-google-maps/api';
 import 'startbootstrap-sb-admin-2/vendor/fontawesome-free/css/all.min.css';
@@ -56,6 +56,50 @@ const DayTripPlanner = () => {
     // Here, you would handle submitting these values to a backend service or using them to filter data client-side
     console.log("Form Submitted", { destination, budget, foodType, activity, interests });
   };
+  const mapContainerStyle = {
+    height: '400px',
+    width: '100%'
+    };
+    const center = {
+    lat: -25.344, // Default center, update as needed
+    lng: 131.031
+    };
+    const googleMapsApiKey = 'AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE';
+    
+    //DELETE WHEN YELP ADDED *************
+    const locations = useMemo(() => [
+    { lat: 32.8812, lng: -117.2344 },
+    { lat: 32.8801, lng: -117.2350 },
+    { lat: 32.8811, lng: -117.2376 },
+    // ... more locations
+    ], []);
+    
+    useEffect(() => {
+    const drawRoute = async () => {
+    if (!isMapsLoaded || locations.length < 2) return;
+    
+    const directionsService = new window.google.maps.DirectionsService();
+    const origin = locations[0];
+    const destination = locations[locations.length - 1];
+    const waypoints = locations.slice(1, -1).map(location => ({ location, stopover: true }));
+    
+    try {
+    const response = await directionsService.route({
+    origin,
+    destination,
+    waypoints,
+    travelMode: window.google.maps.TravelMode.DRIVING,
+    });
+    setDirectionsResponse(response);
+    } catch (error) {
+    console.error('Directions request failed due to ' + error);
+    }
+    };
+    
+    if (isMapsLoaded) {
+    drawRoute();
+    }
+    }, [isMapsLoaded, locations]);
 
   const handleScriptLoad = () => {
     setIsMapsLoaded(true);
