@@ -29,6 +29,21 @@ const DayTripPlanner = () => {
     "Nightlife": "nightlife",
   };
 
+  const toggleInterest = (selectedActivity) => {
+    setInterests(currentInterests => {
+      if (currentInterests.includes(selectedActivity)) {
+        return currentInterests.filter(interest => interest !== selectedActivity);
+      } else {
+        return [...currentInterests, selectedActivity];
+      }
+    });
+  };
+
+  // Check if an activity is in the interests array
+  const isInterestSelected = (activity) => {
+    return interests.includes(activity);
+  };
+
   const handleSelectFoodType = (eventKey) => setFoodType(eventKey);
   const handleSelectActivity = (eventKey) => setActivity(eventKey);
   const handleSelectBudget = (eventKey) => setBudget(eventKey);
@@ -205,34 +220,34 @@ const DayTripPlanner = () => {
                     </DropdownButton>
                   </Col>
                   <Col md={4}>
-                    <DropdownButton
-                      as={InputGroup.Prepend}
-                      variant="outline-secondary"
-                      title={activity || "Select Activity"}
-                      id="input-group-dropdown-3"
-                      onSelect={handleSelectActivity}
-                    >
-                      {activities.map((activity, index) => (
-                        <Dropdown.Item key={index} eventKey={activity}>{activity}</Dropdown.Item>
-                      ))}
-                    </DropdownButton>
-                  </Col>
+          <Form>
+            {/* Multi-select dropdown for activities */}
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Select Activities
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {activities.map((activity, index) => (
+                  <Dropdown.Item 
+                    key={index} 
+                    onClick={() => toggleInterest(activity)}
+                    active={isInterestSelected(activity)}>
+                    {isInterestSelected(activity) ? '✓ ' : ''}{activity}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+
+            {/* Display selected interests */}
+
+
+            {/* The rest of your form elements */}
+          </Form>
+        </Col>
                 </Row>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Add Interests</Form.Label>
-                  <InputGroup>
-                    <FormControl
-                      type="text"
-                      placeholder="Type an interest..."
-                      value={inputInterest}
-                      onChange={(e) => setInputInterest(e.target.value)}
-                    />
-                    <Button variant="outline-secondary" onClick={addInterest}>
-                      Add Interest
-                    </Button>
-                  </InputGroup>
-                </Form.Group>
+  
 
                 {interests.length > 0 && (
                   <div>
