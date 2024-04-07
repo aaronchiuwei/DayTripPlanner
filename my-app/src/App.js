@@ -48,35 +48,39 @@ const DayTripPlanner = () => {
 
   // Map the dollar signs to numeric price levels for Yelp
   const priceLevels = { "$": "1", "$$": "2", "$$$": "3", "$$$$": "4" };
+  const mealTypes = ["breakfast", "lunch", "dinner"];
   const price = priceLevels[budget];
+  for (const meal of mealTypes) {
+    // Combine meal type with the food type and activity for the search term
+    const searchTerm = [meal, foodType].filter(Boolean).join(' ');
+
     try {
       // Construct the search query parameters
       const queryParams = new URLSearchParams({
-        term: foodType,
+        term: searchTerm, // Now includes the meal type
         location: destination,
-        price: price, // Use the mapped price level
+        price: priceLevels[budget], // Use the mapped price level
         // Add other parameters as needed
       });
-  
-      // Call your backend endpoint with the query params
+
       console.log(queryParams.toString());
       const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
       const data = await response.json();
-      const newLocation = { lat: data.coordinates.latitude, lng: data.coordinates.longitude}
-      setMapCenter({
-        lat: data.coordinates.latitude,
-        lng: data.coordinates.longitude
-      })
-      addLocation(newLocation)
-      console.log(locations)
-      // Now you can do something with the data, e.g., update state to display results
+
+      // Assuming each response includes a relevant location
+      if (data.coordinates) {
+        const newLocation = { lat: data.coordinates.latitude, lng: data.coordinates.longitude };
+        setMapCenter(newLocation); // Update map center to the latest location
+        addLocation(newLocation); // Add the new location for rendering on the map
+      }
+
       console.log(data);
     } catch (error) {
-      console.error("Failed to fetch Yelp data:", error);
+      console.error(`Failed to fetch Yelp data for ${meal}:`, error);
     }
-    // Here, you would handle submitting these values to a backend service or using them to filter data client-side
-    console.log("Form Submitted", { destination, budget, foodType, activity, interests })
-  };
+  }
+  console.log("Form Submitted", { destination, budget, foodType, activity, interests });
+};
   const mapContainerStyle = {
     height: '400px',
     width: '100%'
