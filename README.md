@@ -9,8 +9,6 @@ Day Trip Planner is a dynamic, user-friendly application designed for individual
 - **Diverse Culinary Exploration:** Offers recommendations from a wide range of food types and dining experiences, sourced through the Yelp API.
 - **Dynamic Itinerary Updates:** ChatGPT API integration allows for a well-curated itinerary.
 
-## Getting Started
-
 ## Inspiration
 The inspiration for Day Trip Planner stemmed from our desire to find something fun to do on weekends.
 
