@@ -43,9 +43,6 @@ We welcome contributions! If you're interested in improving Day Trip Planner, pl
 4. Push to the branch (`git push origin feature/AmazingFeature`).
 5. Open a pull request.
 
-## License
-Distributed under the MIT License. See `LICENSE` for more information.
-
 ## Contact
 Aaron Chiuwei, Kile Hsu, Shrey Gandhi, Varun Sharma
 
