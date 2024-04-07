@@ -41,7 +41,7 @@ Through this project, we learned valuable skills in frontend development, API in
 ## What's next for Day Trip Planner
 In the future, we aim to enhance Day Trip Planner by adding more features such as user authentication, sharing, and improve the selection of activities. We also plan to expand our database of locations and activities to offer broader options to users.
 
-## Contact
+## Group Members
 Aaron Chiuwei, Kile Hsu, Shrey Gandhi, Varun Sharma
 
 Project Link: (https://github.com/aaronchiuwei/DayTripPlanner)
