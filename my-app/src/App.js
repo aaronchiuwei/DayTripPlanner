@@ -9,6 +9,7 @@ const DayTripPlanner = () => {
   const indexToLetter = (index) => {
     return String.fromCharCode(65 + index); // 65 is the ASCII code for 'A'
   };
+  const [triggerItineraryGeneration, setTriggerItineraryGeneration] = useState(false);
   const [aiItinerary, setAiItinerary] = useState('');
   const [locations, setLocations] = useState([]);
   const [destination, setDestination] = useState('');
@@ -68,32 +69,31 @@ const DayTripPlanner = () => {
   };
 
   const fetchActivities = async () => {
-    for (const interest of interests) {
-      // Use the activity as the search term directly
-      const searchTerm = activity;
+    const fetchPromises = interests.map(async (interest) => {
+      const searchTerm = activity; // Directly use the activity as the search term
+      const queryParams = new URLSearchParams({
+        term: searchTerm,
+        location: destination,
+        categories: categoryMappings[interest], // Map activities to Yelp categories
+      });
 
       try {
-        const queryParams = new URLSearchParams({
-          term: searchTerm, // Directly use the activity as the search term
-          location: destination,
-          categories: categoryMappings[interest], // Optionally, map activities to specific Yelp categories
-        });
-
         const response = await fetch(`http://localhost:3001/yelp-search?${queryParams}`);
         const data = await response.json();
-
-
-        console.log(data);
-
         if (data.coordinates) {
-          const newLocation = { name: data.name, lat: data.coordinates.latitude, lng: data.coordinates.longitude };
-          addLocation(newLocation); // Assuming this function adds the location to an array or state for rendering
+          return { name: data.name, lat: data.coordinates.latitude, lng: data.coordinates.longitude };
         }
       } catch (error) {
         console.error(`Failed to fetch Yelp data for ${activity}:`, error);
+        return null; // Return null or some indicator of failure
       }
-    }
-  };
+    });
+
+    // Wait for all fetches to complete
+    const locationsResults = await Promise.all(fetchPromises);
+    // Filter out any nulls (failed fetches) and update locations
+    setLocations(locations => [...locations, ...locationsResults.filter(location => location !== null)]);
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -132,11 +132,18 @@ const DayTripPlanner = () => {
         console.error(`Failed to fetch Yelp data for ${meal}:`, error);
       }
     }
-    fetchActivities();
+    await fetchActivities();
     console.log(locations)
-    generateItinerary();
     console.log("Form Submitted", { destination, budget, foodType, activity, interests });
+    setTriggerItineraryGeneration(true);
   };
+  useEffect(() => {
+    if (triggerItineraryGeneration && locations.length > 0) {
+      generateItinerary();
+      // Reset the trigger to prevent re-generating the itinerary unintentionally
+      setTriggerItineraryGeneration(false);
+    }
+  }, [triggerItineraryGeneration, locations]);
   const mapContainerStyle = {
     height: '400px',
     width: '100%'
@@ -178,7 +185,7 @@ const DayTripPlanner = () => {
     setIsMapsLoaded(true);
   };
   const generateItinerary = async () => {
-    console.log(locations);
+    console.log({ locations: locations.map(location => location.name) });
     try {
       const response = await fetch('http://localhost:3001/generate-itinerary', {
         method: 'POST',
@@ -331,7 +338,7 @@ const DayTripPlanner = () => {
         <Col lg={10}>
           <div className="card shadow">
             <div className="card-header py-3">
-              <h2 className="m-0 font-weight-bold text-primary">AI-Generated Itinerary</h2>
+              <h2 className="m-0 font-weight-bold text-primary">Generated Itinerary</h2>
             </div>
             <div className="card-body">
               {/* Conditional rendering in case the itinerary is not yet generated */}
