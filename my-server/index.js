@@ -11,8 +11,8 @@ app.use(express.json());
 const port = 3001; // Port where the backend server will listen
 
 // Your Yelp Fusion API Key
-const apiKey = 'IScLCqWzWCfs12qLvmdZgCtEPr8ld043IpNfxGE0h1g3ndh1H-pC3L1jwF5OqMWE-_DG1B5ZIsKpMzCYmGfegUJDFLf_03icn-TmJsgap5jnKQQFYtsMAZf4hPQSZnYx';
-const OPENAI_API_KEY = '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';
+const apiKey = '';
+const OPENAI_API_KEY = '';
 const client = yelp.client(apiKey);
 
 app.use(cors());
