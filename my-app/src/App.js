@@ -152,7 +152,7 @@ const DayTripPlanner = () => {
     lat: -25.344, // Default center, update as needed
     lng: 131.031
   };
-  const googleMapsApiKey = 'AIzaSyDW16hk55KXeV3SIFMETLNZkkAxNL8LAQE';
+  const googleMapsApiKey = GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
     const drawRoute = async () => {
