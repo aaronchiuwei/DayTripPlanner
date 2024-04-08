@@ -6,7 +6,7 @@ const port = 3001;
 
 app.use(express.json()); // For parsing application/json
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '';
 
 app.post('/generate-itinerary', async (req, res) => {
   const { locations } = req.body; // Assume locations are sent in the request body
